@@ -291,5 +291,13 @@ var share = function()
 	var popup = document.getElementById("myPopup");
 	popup.classList.toggle("show");
 }
+var infoPop = function()
+{
+	document.getElementById("modal-2").style.display = "block";
+}
+var infoHide = function()
+{
+	document.getElementById("modal-2").style.display = "none";
+}
 
 var game = new Phaser.Game(config);
