@@ -13,6 +13,7 @@ var Music = {
 var beatlength = 3200;
 var offset = 1633;
 var globalPressEvent = 0;
+var globalShare = "";
 var beats = [
 	{time: offset, dir: 1},
 	{time: offset+beatlength*1, dir: 2},
@@ -101,6 +102,10 @@ var Scene1 = new Phaser.Class({
 
 		this.currentBeats = beats;
 		this.unhit = true;
+		this.shareString = "";
+		this.score = 0;
+		this.maxScore = this.currentBeats.length * 100;
+		this.hasPopup = false;
 	},
 	buttonPress: function(number)
 	{
@@ -110,10 +115,13 @@ var Scene1 = new Phaser.Class({
 	update: function (time, delta)
 	{
 		this.time = time;
-		if(this.sound.seek*1000 > offset+beatlength*9)
+		if(this.sound.seek*1000 > offset+beatlength*9 && !this.hasPopup)
 		{
+			this.hasPopup = true;
+			this.shareString = "DDRdle " + this.score.toString() + "/" + this.maxScore.toString() + "\n" + this.shareString;
 			document.getElementById("modal").style.display = "block";
-			document.getElementById("result").textContent = "💗";
+			document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
+			navigator.clipboard.writeText(this.shareString);
 		}
 		if(this.currentBeats.length == 0) return;
 		var currentBeatDistance = this.sound.seek*1000 - this.currentBeats[0].time;
@@ -146,6 +154,10 @@ var Scene1 = new Phaser.Class({
 
 		function colorButtons(scene, color)
 		{
+			var square = "⬜";
+			if(color == "green") square = "🟩";
+			if(color == "yellow") square = "🟨";
+			if(color == "grey") square = "⬛";
 			document.getElementById("left").style.backgroundColor = "white";
 			document.getElementById("down").style.backgroundColor = "white";
 			document.getElementById("up").style.backgroundColor = "white";
@@ -153,19 +165,40 @@ var Scene1 = new Phaser.Class({
 			if(scene.currentBeats[0].dir % 2 == 1)
 			{
 				document.getElementById("left").style.backgroundColor = color;
+				scene.shareString += square;
+			}
+			else
+			{
+				scene.shareString += "⬜";
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 2) % 2 == 1)
 			{
 				document.getElementById("down").style.backgroundColor = color;
+				scene.shareString += square;
+			}
+			else
+			{
+				scene.shareString += "⬜";
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 4) % 2 == 1)
 			{
 				document.getElementById("up").style.backgroundColor = color;
+				scene.shareString += square;
+			}
+			else
+			{
+				scene.shareString += "⬜";
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 8) % 2 == 1)
 			{
 				document.getElementById("right").style.backgroundColor = color;
+				scene.shareString += square;
 			}
+			else
+			{
+				scene.shareString += "⬜";
+			}
+			scene.shareString += "\n";
 		}
 
 		if(this.unhit)
@@ -187,6 +220,7 @@ var Scene1 = new Phaser.Class({
 					console.log("hit");
 					this.unhit = false;
 					this.pressEvent = 0;
+					this.score += 50;
 					colorButtons(this, "yellow");
 				}
 				else if(this.pressEvent != 0)
@@ -204,6 +238,7 @@ var Scene1 = new Phaser.Class({
 					console.log("perfect");
 					this.unhit = false;
 					this.pressEvent = 0;
+					this.score += 100;
 					colorButtons(this, "green");
 				}
 				else if(this.pressEvent != 0)
@@ -218,6 +253,10 @@ var Scene1 = new Phaser.Class({
 		if(currentBeatDistance > 1000)
 		{
 			this.currentBeats.shift();
+			if(this.unhit)
+			{
+				colorButtons(this, "white");
+			}
 			this.unhit = true;
 			this.left.setScale(0.5);
 		}
@@ -243,4 +282,10 @@ var buttonPress = function(number){
 	return function(){
 	}
 }
+
+var share = function()
+{
+
+}
+
 var game = new Phaser.Game(config);
