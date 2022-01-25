@@ -119,7 +119,7 @@ var Scene1 = new Phaser.Class({
 		{
 			this.hasPopup = true;
 			this.shareString = "DDRdle " + this.score.toString() + "/" + this.maxScore.toString() + "\n" + this.shareString;
-			this.shareString += "\ntastelikecoke.github.com/ddrdle"
+			this.shareString += "\ntastelikecoke.github.io/ddrdle"
 			document.getElementById("modal").style.display = "block";
 			document.getElementById("result").innerHTML = this.score.toString() + "/" + this.maxScore.toString();
 			//document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
