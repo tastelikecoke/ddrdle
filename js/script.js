@@ -13,7 +13,7 @@ var Music = {
 var beatlength = 3200;
 var offset = 1633;
 var globalPressEvent = 0;
-var globalShare = "";
+var globalShareText = "";
 var beats = [
 	{time: offset, dir: 1},
 	{time: offset+beatlength*1, dir: 2},
@@ -119,9 +119,11 @@ var Scene1 = new Phaser.Class({
 		{
 			this.hasPopup = true;
 			this.shareString = "DDRdle " + this.score.toString() + "/" + this.maxScore.toString() + "\n" + this.shareString;
+			this.shareString += "\ntastelikecoke.github.com/ddrdle"
 			document.getElementById("modal").style.display = "block";
-			document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
-			navigator.clipboard.writeText(this.shareString);
+			document.getElementById("result").innerHTML = this.score.toString() + "/" + this.maxScore.toString();
+			//document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
+			globalShareText = this.shareString;
 		}
 		if(this.currentBeats.length == 0) return;
 		var currentBeatDistance = this.sound.seek*1000 - this.currentBeats[0].time;
@@ -285,7 +287,9 @@ var buttonPress = function(number){
 
 var share = function()
 {
-
+	navigator.clipboard.writeText(globalShareText);
+	var popup = document.getElementById("myPopup");
+	popup.classList.toggle("show");
 }
 
 var game = new Phaser.Game(config);
