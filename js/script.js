@@ -280,9 +280,24 @@ var buttonPress = function(number){
 
 var share = function()
 {
-	navigator.clipboard.writeText(globalShareText);
-	var popup = document.getElementById("myPopup");
-	popup.classList.toggle("show");
+	document.getElementById("input-hidden").innerHTML = globalShareText;
+	var copyText = document.querySelector("#input-hidden");
+	copyText.select();
+	document.execCommand("copy");
+	document.getElementById("share").innerText = "Copied!";
+	setInterval(function(){
+		document.getElementById("share").innerText = "Share";
+	},1000);
+	/*
+	navigator.clipboard.writeText(globalShareText).then(function() {
+		var popup = document.getElementById("myPopup");
+		popup.classList.toggle("show");
+	}, function() {
+		document.getElementById("input-hidden").innerText = globalShareText;
+		var copyText = document.querySelector("#input-hidden");
+		copyText.select();
+		document.execCommand("copy");
+	});*/
 }
 var infoPop = function()
 {
@@ -294,3 +309,13 @@ var infoHide = function()
 }
 
 var game = new Phaser.Game(config);
+
+var resize = function()
+{
+	var mainWidth = document.getElementById("phaser-game").offsetWidth;
+	console.log(mainWidth);
+	var maxedWidth = Math.min(mainWidth, 480);
+	document.getElementsByTagName('canvas').item(0).style.transform = "scale("+ (maxedWidth/480).toString() + ") translateX(" + ((maxedWidth - 480)/1.5).toString() + "px)";
+}
+window.addEventListener("DOMContentLoaded", resize);
+window.addEventListener("resize", resize);
