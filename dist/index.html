@@ -3,10 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>DDrdle - a directional rhythm game</title>
-		<script src="js/phaser.js"></script>
 		<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0"/>
-		<script type="text/javascript">
-		</script>
 	</head>
 	<style>
 		body {
@@ -200,18 +197,17 @@
 	</style>
 	<body>
 		<div class="main">
-			<div class="title"><div class="title-text">DDRDLE</div><div class="title-options" onclick="infoPop()"></div></div>
+			<div class="title"><div class="title-text">DDRDLE</div><div class="title-options" onclick="(new StaticRefs).infoPop()"></div></div>
 			<div class="game" id="phaser-game">
 			</div>
-			<script src="js/script.js"></script>
 			<div class="buttons">
 				<button class="button-up" id="up" onclick="buttonPress(4)"></button>
 				<div class="container">
-					<button class="button-left" id="left" onclick="buttonPress(1)"></button>
+					<button class="button-left" id="left"></button>
 					<button class="button-center"></button>
-					<button class="button-right" id="right" onclick="buttonPress(8)"></button>
+					<button class="button-right" id="right"></button>
 				</div>
-				<button class="button-down" id="down" onclick="buttonPress(2)"></button>
+				<button class="button-down" id="down"></button>
 			</div>
 			<div class="modal" id="modal">
 				<div class="modal-popup">
@@ -219,7 +215,7 @@
 					<div id="result">
 					</div>
 					<textarea id="input-hidden"></textarea>
-					<button class="popup share" id="share" onclick="share()">
+					<button class="popup share" id="share">
 						Share
 						<span class="popuptext" id="myPopup">Copied to clipboard</span>
 					</button>
@@ -227,7 +223,7 @@
 			</div>
 			<div class="modal" id="modal-2">
 				<div class="modal-popup">
-					<div class="closer"><span class="close-title">HOW TO PLAY</span><button onclick="infoHide()">X</button></div>
+					<div class="closer"><span class="close-title">HOW TO PLAY</span><button id="infoHide">X</button></div>
 					
 					Hit the arrow keys or the on-screen buttons at the exact time the arrows are above the grey guides.
 					<br />
@@ -247,5 +243,6 @@
 					</div>
 			</div>
 		</div>
+		<script src="bundle.js"></script>
 	</body>
 </html>

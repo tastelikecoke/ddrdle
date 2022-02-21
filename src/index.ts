@@ -1,20 +1,10 @@
+import 'phaser';
 
-
-var Music = {
-	init: function(scene)
-	{
-	},
-	play: function()
-	{
-		this.sound.play();
-	}
-}
-
-var beatlength = 3200;
-var offset = 1633;
-var globalPressEvent = 0;
-var globalShareText = "";
-var beats = [
+let beatlength = 3200;
+let offset = 1633;
+let globalPressEvent = 0;
+let globalShareText = "";
+let beats = [
 	{time: offset, dir: 1},
 	{time: offset+beatlength*1, dir: 2},
 	{time: offset+beatlength*2, dir: 4},
@@ -25,21 +15,39 @@ var beats = [
 	{time: offset+beatlength*7, dir: 8}
 ]
 
-var Scene1 = new Phaser.Class({
-	initialize: function Scene1()
-	{
-
-	},
-	preload: function()
-	{
+class FirstScene extends Phaser.Scene {
+  private timeOffset: number = 0;
+  private musicOffset: number = 0;
+  private hasPopup: boolean = false;
+  private shareString: string = "";
+  private score: number = 0;
+  private maxScore: number = 0;
+  private leftgrey: any;
+  private downgrey: any;
+  private upgrey: any;
+  private rightgrey: any;
+  private left: any;
+  private down: any;
+  private up: any;
+  private right: any;
+  private timeText: any;
+  private soundmaker: any;
+  private started: boolean = false;
+  private pressEvent: any;
+  private currentBeats: any;
+  private unhit: boolean = false;
+	constructor() {
+		super({
+			key: 'FirstScene'
+		});
+	}
+  preload(): void {
 		this.load.image('blank', 'img/blank.png');
 		this.load.image('arrowgrey', 'img/arrowgrey.png');
 		this.load.image('arrow', 'img/arrow.png');
 		this.load.audio('mainaudio', 'audio/resaruto1.mp3');
-	},
-	
-	create: function()
-	{
+  }
+  create(): void {
 		this.add.image(0, 0, "blank").setOrigin(0,0).setScale(20, 15);
 		var rectsize = 64; 
 		var margin = (480-rectsize*4)/2 + rectsize/2;
@@ -63,16 +71,16 @@ var Scene1 = new Phaser.Class({
 		this.right = this.add.image(margin + rectsize*3, farDistance, "arrow").setScale(0.5);
 		this.right.angle = 180;
 		
-		this.timeText = this.add.text(100, 180, 'PRESS TO START', {font: '32px Arial', fill: '#999999'});
+		this.timeText = this.add.text(100, 180, 'PRESS TO START', {font: '32px Arial', color: '#999999'});
 		this.musicOffset = 0;
 	
-		this.sound = this.sound.add('mainaudio');
+		this.soundmaker = this.sound.add('mainaudio');
 
-		var startFunc = function(scene){
+		var startFunc = function(scene): Function{
 			return function(){
 				if(scene.started) return;
 				scene.started = true;
-				scene.sound.play();
+				scene.soundmaker.play();
 				scene.timeText.x = 1000;
 			}
 		}(this);
@@ -80,7 +88,7 @@ var Scene1 = new Phaser.Class({
 
 		this.input.on('pointerdown', startFunc);
 		this.input.keyboard.on('keydown', function(scene){
-			return function(event){
+			return function(event: Phaser.Input.Keyboard.Key){
 				if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.LEFT)
 				{
 					scene.pressEvent = scene.pressEvent | 1;
@@ -106,27 +114,20 @@ var Scene1 = new Phaser.Class({
 		this.score = 0;
 		this.maxScore = this.currentBeats.length * 100;
 		this.hasPopup = false;
-	},
-	buttonPress: function(number)
-	{
-		this.pressEvent = this.pressEvent | number;
-	},
-	
-	update: function (time, delta)
-	{
-		this.time = time;
-		if(this.sound.seek*1000 > offset+beatlength*9 && !this.hasPopup)
+  }
+  update(time: number, delta: number): void {
+		if(this.soundmaker.seek * 1000 > offset+beatlength*9 && !this.hasPopup)
 		{
 			this.hasPopup = true;
 			this.shareString = "DDRdle " + this.score.toString() + "/" + this.maxScore.toString() + "\n" + this.shareString;
-			this.shareString += "\ntastelikecoke.github.io/ddrdle"
-			document.getElementById("modal").style.display = "block";
-			document.getElementById("result").innerHTML = this.score.toString() + "/" + this.maxScore.toString();
+			this.shareString += "\ntastelikecoke.github.io/ddrdle";
+      document.getElementById("modal")!.style.display = "block";
+      document.getElementById("result")!.innerHTML = this.score.toString() + "/" + this.maxScore.toString();
 			//document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
 			globalShareText = this.shareString;
 		}
 		if(this.currentBeats.length == 0) return;
-		var currentBeatDistance = this.sound.seek*1000 - this.currentBeats[0].time;
+		var currentBeatDistance = this.soundmaker.seek*1000 - this.currentBeats[0].time;
 		if(globalPressEvent != 0)
 		{
 			this.pressEvent = globalPressEvent;
@@ -153,19 +154,18 @@ var Scene1 = new Phaser.Class({
 			if(!this.unhit) this.right.y = 1000;
 		}
 
-		function colorButtons(scene, color)
-		{
+		function colorButtons(scene: FirstScene, color: string) {
 			var square = "⬜";
 			if(color == "green") square = "🟩";
 			if(color == "yellow") square = "🟨";
 			if(color == "grey") square = "⬛";
-			document.getElementById("left").style.backgroundColor = "white";
-			document.getElementById("down").style.backgroundColor = "white";
-			document.getElementById("up").style.backgroundColor = "white";
-			document.getElementById("right").style.backgroundColor = "white";
+			document.getElementById("left")!.style.backgroundColor = "white";
+			document.getElementById("down")!.style.backgroundColor = "white";
+			document.getElementById("up")!.style.backgroundColor = "white";
+			document.getElementById("right")!.style.backgroundColor = "white";
 			if(scene.currentBeats[0].dir % 2 == 1)
 			{
-				document.getElementById("left").style.backgroundColor = color;
+				document.getElementById("left")!.style.backgroundColor = color;
 				scene.shareString += square;
 			}
 			else
@@ -174,7 +174,7 @@ var Scene1 = new Phaser.Class({
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 2) % 2 == 1)
 			{
-				document.getElementById("down").style.backgroundColor = color;
+				document.getElementById("down")!.style.backgroundColor = color;
 				scene.shareString += square;
 			}
 			else
@@ -183,7 +183,7 @@ var Scene1 = new Phaser.Class({
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 4) % 2 == 1)
 			{
-				document.getElementById("up").style.backgroundColor = color;
+				document.getElementById("up")!.style.backgroundColor = color;
 				scene.shareString += square;
 			}
 			else
@@ -192,7 +192,7 @@ var Scene1 = new Phaser.Class({
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 8) % 2 == 1)
 			{
-				document.getElementById("right").style.backgroundColor = color;
+				document.getElementById("right")!.style.backgroundColor = color;
 				scene.shareString += square;
 			}
 			else
@@ -257,65 +257,71 @@ var Scene1 = new Phaser.Class({
 			this.left.setScale(0.5);
 		}
 		this.pressEvent = 0;
-	}
-	
-});
-
-var config = {
-	type: Phaser.AUTO,
-	width: 480,
-	height: 360,
-	parent: document.getElementById("phaser-game"),
-	physics: {
-		default: 'arcade',
-	},
-	scene: [Scene1,]
+  }
 }
 
-var buttonPress = function(number){
-	globalPressEvent = globalPressEvent | number;
-	return function(){
+class DdrdleGame {
+	constructor() {
+		var config: Phaser.Types.Core.GameConfig = {
+			type: Phaser.AUTO,
+			width: 480,
+			height: 360,
+			parent: "phaser-game",
+			physics: {
+				default: 'arcade',
+			},
+			scene: [FirstScene,]
+		};
+		var game = new Phaser.Game(config);
 	}
 }
 
+var buttonPress = function(number: number){
+  return function(){
+    globalPressEvent = globalPressEvent | number;
+  }
+}
 var share = function()
 {
-	document.getElementById("input-hidden").innerHTML = globalShareText;
-	var copyText = document.querySelector("#input-hidden");
-	copyText.select();
-	document.execCommand("copy");
-	document.getElementById("share").innerText = "Copied!";
-	setInterval(function(){
-		document.getElementById("share").innerText = "Share";
-	},1000);
-	/*
-	navigator.clipboard.writeText(globalShareText).then(function() {
-		var popup = document.getElementById("myPopup");
-		popup.classList.toggle("show");
-	}, function() {
-		document.getElementById("input-hidden").innerText = globalShareText;
-		var copyText = document.querySelector("#input-hidden");
-		copyText.select();
-		document.execCommand("copy");
-	});*/
+  document.getElementById("input-hidden")!.innerHTML = globalShareText;
+  var copyText = document.querySelector("#input-hidden");
+  //copyText!.select();
+  document.execCommand("copy");
+  document.getElementById("share")!.innerText = "Copied!";
+  setInterval(function(){
+    document.getElementById("share")!.innerText = "Share";
+  },1000);
 }
 var infoPop = function()
 {
-	document.getElementById("modal-2").style.display = "block";
+  document.getElementById("modal-2")!.style.display = "block";
 }
 var infoHide = function()
 {
-	document.getElementById("modal-2").style.display = "none";
+  document.getElementById("modal-2")!.style.display = "none";
 }
-
-var game = new Phaser.Game(config);
-
 var resize = function()
 {
-	var mainWidth = document.getElementById("phaser-game").offsetWidth;
-	console.log(mainWidth);
-	var maxedWidth = Math.min(mainWidth, 480);
-	document.getElementsByTagName('canvas').item(0).style.transform = "scale("+ (maxedWidth/480).toString() + ") translateX(" + ((maxedWidth - 480)/1.5).toString() + "px)";
+  var mainWidth = document.getElementById("phaser-game")!.offsetWidth;
+  console.log(mainWidth);
+  var maxedWidth = Math.min(mainWidth, 480);
+  var canvasElement = document.getElementsByTagName('canvas');
+  if(canvasElement != null) {
+    var canvasElementFirstItem = canvasElement.item(0);
+    if(canvasElementFirstItem != null)
+      canvasElementFirstItem.style.transform = "scale("+ (maxedWidth/480).toString() + ") translateX(" + ((maxedWidth - 480)/1.5).toString() + "px)";
+  }
 }
-window.addEventListener("DOMContentLoaded", resize);
-window.addEventListener("resize", resize);
+
+window.onload = () => {
+	var game = new DdrdleGame();
+  window.addEventListener("DOMContentLoaded", resize);
+  window.addEventListener("resize", resize);
+  document.getElementById("up")!.onclick = buttonPress(4);
+  document.getElementById("left")!.onclick = buttonPress(1);
+  document.getElementById("right")!.onclick = buttonPress(8);
+  document.getElementById("down")!.onclick = buttonPress(2);
+  document.getElementById("share")!.onclick = share;
+  document.getElementById("infoHide")!.onclick = infoHide;
+
+}
