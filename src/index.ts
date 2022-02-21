@@ -14,6 +14,11 @@ let beats = [
 	{time: offset+beatlength*6, dir: 4},
 	{time: offset+beatlength*7, dir: 8}
 ]
+let customGetElementById = function(elementId: string, action: (x: HTMLElement) => void): void{
+  var element = document.getElementById(elementId);  
+  if(element != null)
+    action(element);
+}
 
 class FirstScene extends Phaser.Scene {
   private timeOffset: number = 0;
@@ -115,14 +120,15 @@ class FirstScene extends Phaser.Scene {
 		this.maxScore = this.currentBeats.length * 100;
 		this.hasPopup = false;
   }
+
   update(time: number, delta: number): void {
 		if(this.soundmaker.seek * 1000 > offset+beatlength*9 && !this.hasPopup)
 		{
 			this.hasPopup = true;
 			this.shareString = "DDRdle " + this.score.toString() + "/" + this.maxScore.toString() + "\n" + this.shareString;
 			this.shareString += "\ntastelikecoke.github.io/ddrdle";
-      document.getElementById("modal")!.style.display = "block";
-      document.getElementById("result")!.innerHTML = this.score.toString() + "/" + this.maxScore.toString();
+			customGetElementById("modal", (element: HTMLElement) => {element.style.display = "block";});
+			customGetElementById("result", (element: HTMLElement) => {element.innerHTML = this.score.toString() + "/" + this.maxScore.toString();});
 			//document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
 			globalShareText = this.shareString;
 		}
@@ -159,13 +165,13 @@ class FirstScene extends Phaser.Scene {
 			if(color == "green") square = "🟩";
 			if(color == "yellow") square = "🟨";
 			if(color == "grey") square = "⬛";
-			document.getElementById("left")!.style.backgroundColor = "white";
-			document.getElementById("down")!.style.backgroundColor = "white";
-			document.getElementById("up")!.style.backgroundColor = "white";
-			document.getElementById("right")!.style.backgroundColor = "white";
+			customGetElementById("left", (element: HTMLElement) => {element.style.backgroundColor = "white";});
+			customGetElementById("down", (element: HTMLElement) => {element.style.backgroundColor = "white";});
+			customGetElementById("up", (element: HTMLElement) => {element.style.backgroundColor = "white";});
+			customGetElementById("right", (element: HTMLElement) => {element.style.backgroundColor = "white";});
 			if(scene.currentBeats[0].dir % 2 == 1)
 			{
-				document.getElementById("left")!.style.backgroundColor = color;
+				customGetElementById("left", (element: HTMLElement) => {element.style.backgroundColor = color;});
 				scene.shareString += square;
 			}
 			else
@@ -174,7 +180,7 @@ class FirstScene extends Phaser.Scene {
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 2) % 2 == 1)
 			{
-				document.getElementById("down")!.style.backgroundColor = color;
+				customGetElementById("down", (element: HTMLElement) => {element.style.backgroundColor = color;});
 				scene.shareString += square;
 			}
 			else
@@ -183,7 +189,7 @@ class FirstScene extends Phaser.Scene {
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 4) % 2 == 1)
 			{
-				document.getElementById("up")!.style.backgroundColor = color;
+				customGetElementById("up", (element: HTMLElement) => {element.style.backgroundColor = color;});
 				scene.shareString += square;
 			}
 			else
@@ -192,7 +198,7 @@ class FirstScene extends Phaser.Scene {
 			}
 			if(Math.floor(scene.currentBeats[0].dir / 8) % 2 == 1)
 			{
-				document.getElementById("right")!.style.backgroundColor = color;
+				customGetElementById("right", (element: HTMLElement) => {element.style.backgroundColor = color;});
 				scene.shareString += square;
 			}
 			else
@@ -283,26 +289,28 @@ var buttonPress = function(number: number){
 }
 var share = function()
 {
-  document.getElementById("input-hidden")!.innerHTML = globalShareText;
+  customGetElementById("input-hidden", (element: HTMLElement) => {element.innerHTML = globalShareText;});
   var copyText = document.querySelector("#input-hidden");
   //copyText!.select();
   document.execCommand("copy");
-  document.getElementById("share")!.innerText = "Copied!";
+  customGetElementById("share", (element: HTMLElement) => {element.innerText = "Copied!";});
   setInterval(function(){
-    document.getElementById("share")!.innerText = "Share";
+	customGetElementById("share", (element: HTMLElement) => {element.innerText = "Share";});
   },1000);
 }
 var infoPop = function()
 {
-  document.getElementById("modal-2")!.style.display = "block";
+  customGetElementById("modal-2", (element: HTMLElement) => {element.style.display = "block";});
+  document.getElementById("modal-2")!
 }
 var infoHide = function()
 {
-  document.getElementById("modal-2")!.style.display = "none";
+  customGetElementById("modal-2", (element: HTMLElement) => {element.style.display = "none";});
 }
 var resize = function()
 {
-  var mainWidth = document.getElementById("phaser-game")!.offsetWidth;
+  var mainWidth = 0;
+  customGetElementById("phaser-game", (element: HTMLElement) => {mainWidth = element.offsetWidth;});
   console.log(mainWidth);
   var maxedWidth = Math.min(mainWidth, 480);
   var canvasElement = document.getElementsByTagName('canvas');
@@ -317,11 +325,11 @@ window.onload = () => {
 	var game = new DdrdleGame();
   window.addEventListener("DOMContentLoaded", resize);
   window.addEventListener("resize", resize);
-  document.getElementById("up")!.onclick = buttonPress(4);
-  document.getElementById("left")!.onclick = buttonPress(1);
-  document.getElementById("right")!.onclick = buttonPress(8);
-  document.getElementById("down")!.onclick = buttonPress(2);
-  document.getElementById("share")!.onclick = share;
-  document.getElementById("infoHide")!.onclick = infoHide;
-
+  customGetElementById("up", (element: HTMLElement) => {element.onclick = buttonPress(4);});
+  customGetElementById("left", (element: HTMLElement) => {element.onclick = buttonPress(1);});
+  customGetElementById("right", (element: HTMLElement) => {element.onclick = buttonPress(8);});
+  customGetElementById("down", (element: HTMLElement) => {element.onclick = buttonPress(2);});
+  customGetElementById("share", (element: HTMLElement) => {element.onclick = share;});
+  customGetElementById("infoHide", (element: HTMLElement) => {element.onclick = infoHide;});
+  customGetElementById("title-options", (element: HTMLElement) => {element.onclick = infoPop;});
 }
