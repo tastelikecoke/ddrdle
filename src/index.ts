@@ -1,4 +1,5 @@
 import 'phaser';
+import ClipboardJS from 'clipboard';
 
 let beatlength = 3200;
 let offset = 1633;
@@ -129,8 +130,8 @@ class FirstScene extends Phaser.Scene {
 			this.shareString += "\ntastelikecoke.github.io/ddrdle";
 			customGetElementById("modal", (element: HTMLElement) => {element.style.display = "block";});
 			customGetElementById("result", (element: HTMLElement) => {element.innerHTML = this.score.toString() + "/" + this.maxScore.toString();});
-			//document.getElementById("result").innerHTML = this.shareString.replaceAll("\n","<br />");
 			globalShareText = this.shareString;
+			customGetElementById("input-hidden", (element: HTMLElement) => {element.innerHTML = globalShareText;});
 		}
 		if(this.currentBeats.length == 0) return;
 		var currentBeatDistance = this.soundmaker.seek*1000 - this.currentBeats[0].time;
@@ -169,6 +170,7 @@ class FirstScene extends Phaser.Scene {
 			customGetElementById("down", (element: HTMLElement) => {element.style.backgroundColor = "white";});
 			customGetElementById("up", (element: HTMLElement) => {element.style.backgroundColor = "white";});
 			customGetElementById("right", (element: HTMLElement) => {element.style.backgroundColor = "white";});
+			if(scene.currentBeats.length <= 0) return;
 			if(scene.currentBeats[0].dir % 2 == 1)
 			{
 				customGetElementById("left", (element: HTMLElement) => {element.style.backgroundColor = color;});
@@ -289,19 +291,14 @@ var buttonPress = function(number: number){
 }
 var share = function()
 {
-  customGetElementById("input-hidden", (element: HTMLElement) => {element.innerHTML = globalShareText;});
-  var copyText = document.querySelector("#input-hidden");
-  //copyText!.select();
-  document.execCommand("copy");
   customGetElementById("share", (element: HTMLElement) => {element.innerText = "Copied!";});
-  setInterval(function(){
+  setTimeout(function(){
 	customGetElementById("share", (element: HTMLElement) => {element.innerText = "Share";});
   },1000);
 }
 var infoPop = function()
 {
   customGetElementById("modal-2", (element: HTMLElement) => {element.style.display = "block";});
-  document.getElementById("modal-2")!
 }
 var infoHide = function()
 {
@@ -329,7 +326,9 @@ window.onload = () => {
   customGetElementById("left", (element: HTMLElement) => {element.onclick = buttonPress(1);});
   customGetElementById("right", (element: HTMLElement) => {element.onclick = buttonPress(8);});
   customGetElementById("down", (element: HTMLElement) => {element.onclick = buttonPress(2);});
-  customGetElementById("share", (element: HTMLElement) => {element.onclick = share;});
   customGetElementById("infoHide", (element: HTMLElement) => {element.onclick = infoHide;});
   customGetElementById("title-options", (element: HTMLElement) => {element.onclick = infoPop;});
+  new ClipboardJS("#share").on('success', function(e) {
+		share();
+	});
 }

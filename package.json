@@ -2,6 +2,7 @@
   "private": true,
   "dependencies": {
     "@types/lodash": "^4.14.178",
+    "clipboard": "^2.0.10",
     "lodash": "^4.17.21",
     "phaser": "3.55.2",
     "phaser3-project-template": "^1.0.9",
